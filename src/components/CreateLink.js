@@ -27,9 +27,11 @@ const CreateLink = () => {
     const [description, setDescription] = React.useState('');
     const [url, setUrl] = React.useState('');
 
-    const submit = React.useCallback(() => {
+    const [state, executeMutation] = useMutation(POST_MUTATION);
 
-    }, [])
+    const submit = React.useCallback(() => {
+        executeMutation({ url, description })
+    }, [executeMutation, url, description])
 
     return (
         <div>
@@ -49,7 +51,7 @@ const CreateLink = () => {
                     placeholder='The URL for the link'
                 />
             </div>
-            <button onClick={submit}>
+            <button onClick={submit} disabled={state.fetching}>
                 Submit
             </button>
         </div>
