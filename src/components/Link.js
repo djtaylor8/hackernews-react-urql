@@ -1,10 +1,33 @@
 import React from 'react';
+import gql from 'graphql-tag';
+import { useMutation } from 'urql';
 import { getToken } from '../token';
 import { timeDifferenceForDate } from '../dates';
 
+const VOTE_MUTATION = gql`
+    mutation VoteMutation($linkId: ID!) {
+        vote(linkId: $linkId) {
+            link {
+                id
+                votes {
+                    id
+                    user {
+                      id
+                    }
+                }
+            }
+        }
+    }
+`
+
 const Link = ({ index, link }) => {
     const isLoggedIn = !!getToken();
-    const upvote = React.useCallback(() => {}, [])
+    const [state, executeMutation] = useMutation(VOTE_MUTATION);
+    const upvote = React.useCallback(() => {
+        if (!state.fetcing) {
+            executeMutation({ linkId: link.id });
+        }
+    }, [state.fetching, executeMutation, link.id])
 
 
     return (
@@ -12,7 +35,7 @@ const Link = ({ index, link }) => {
             <div className='flex items-center'>
                 <span className="gray">{index + 1}.</span>
                 {isLoggedIn && (
-                <div className="ml1 gray f11" onClick={upvote}>
+                <div className="ml1 pointer gray f11" onClick={upvote}>
                     ▲
                 </div>
                 )}
