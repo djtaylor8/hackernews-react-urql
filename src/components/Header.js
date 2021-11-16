@@ -3,28 +3,10 @@ import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router';
 import { getToken, deleteToken } from '../token';
 
-import gql from 'graphql-tag';
-import { useMutation } from 'urql';
-import { setToken } from '../token';
-
-const SIGNUP_MUTATION = gql`
-    mutation SignupMutation($email: String!, $password: String!, $name: String!) {
-        signup(email: $email, password: $password, name: $name) {
-            token
-        }
-    }
-`
-const LOGIN_MUTATION = gql`
-    mutation LoginMutation($email: String!, $password: String!) {
-        login(email: $email, password: $password) {
-            token
-        }
-    }
-`
-
 const Header = (props) => {
     const navigate = useNavigate();
     const isLoggedIn = !!getToken();
+
     return (
         <div className='flex pa1 justify-between nowrap orange'>
             <div className='flex flex-fixed black'>
