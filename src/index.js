@@ -12,7 +12,7 @@ const cache = cacheExchange({})
 const client = new Client({
   url: 'http://localhost:4000',
   fetchOptions: () => {
-    const token = getToken()
+    const token = getToken();
     return {
       headers: { authorization: token ? `Bearer ${token}` : '' }
     }
