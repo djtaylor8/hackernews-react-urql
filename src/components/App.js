@@ -6,6 +6,7 @@ import Header from './Header';
 import CreateLink from './CreateLink';
 import LinkList from './LinkList';
 import Login from './Login';
+import Search from './Search';
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
           <Route exact path='/' element={<LinkList />} />
           <Route exact path='/create' element={<CreateLink />} />
           <Route exact path='/login' element={<Login />} />
+          <Route exact path='/search' element={<Search /> }/>
         </Routes>
       </div>
     </div>
