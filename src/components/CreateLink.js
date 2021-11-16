@@ -1,6 +1,7 @@
 import React from 'react';
 import gql from 'graphql-tag';
 import { useMutation } from 'urql';
+import { useNavigate } from 'react-router';
 
 const POST_MUTATION = gql`
     mutation PostMutation($description: String!, $url: String!) {
@@ -26,12 +27,15 @@ const POST_MUTATION = gql`
 const CreateLink = () => {
     const [description, setDescription] = React.useState('');
     const [url, setUrl] = React.useState('');
+    const navigate = useNavigate();
 
     const [state, executeMutation] = useMutation(POST_MUTATION);
 
     const submit = React.useCallback(() => {
-        executeMutation({ url, description })
-    }, [executeMutation, url, description])
+        executeMutation({ url, description }).then(() => {
+            navigate('/')
+        })
+    }, [executeMutation, url, description, navigate])
 
     return (
         <div>
