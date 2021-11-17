@@ -24,7 +24,7 @@ const Link = ({ index, link }) => {
     const isLoggedIn = !!getToken();
     const [state, executeMutation] = useMutation(VOTE_MUTATION);
     const upvote = React.useCallback(() => {
-        if (!state.fetcing) {
+        if (!state.fetching) {
             executeMutation({ linkId: link.id });
         }
     }, [state.fetching, executeMutation, link.id])
