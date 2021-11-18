@@ -8,8 +8,11 @@ import {
   createClient,
   fetchExchange,
   dedupExchange,
-  subscriptionExchange
+  subscriptionExchange,
+  Subscription
 } from "urql";
+
+import { SubscriptionClient } from 'subscriptions-transport-ws'
 
 import { cacheExchange } from '@urql/exchange-graphcache';
 
@@ -38,6 +41,16 @@ const cache = cacheExchange({
   }
 })
 
+const subscriptionClient = new Subscription(
+  'ws://localhost:4000',
+  {
+    reconnect: true,
+    connectionParams: {
+      authToken: getToken()
+    }
+  }
+);
+
 const client = createClient({
   url: 'http://localhost:4000',
   fetchOptions: () => {
@@ -46,7 +59,14 @@ const client = createClient({
       headers: { authorization: token ? `Bearer ${token}` : '' }
     }
   },
-  exchanges: [dedupExchange, cache, fetchExchange],
+  exchanges: [
+    dedupExchange, 
+    cache, 
+    fetchExchange,
+    subscriptionExchange({
+      forwardSubscription: operation => subscriptionClient.request(operation)
+    })
+  ]
 })
 
 ReactDOM.render(
