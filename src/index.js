@@ -2,17 +2,15 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 
 import { BrowserRouter } from 'react-router-dom';
+import { SubscriptionClient } from "subscriptions-transport-ws";
 
 import {
   Provider,
   createClient,
   fetchExchange,
   dedupExchange,
-  subscriptionExchange,
-  Subscription
+  subscriptionExchange
 } from "urql";
-
-import { SubscriptionClient } from 'subscriptions-transport-ws'
 
 import { cacheExchange } from '@urql/exchange-graphcache';
 
@@ -26,22 +24,36 @@ const cache = cacheExchange({
   updates: {
     Mutation: {
       post: ({ post }, _args, cache) => {
-        const variables = { first: 10, skip: 0, orderBy: 'createdAt_DESC' }
+        const variables = { first: 10, skip: 0, orderBy: "createdAt_DESC" };
         cache.updateQuery({ query: FEED_QUERY, variables }, data => {
           if (data !== null) {
-            data.feed.links.unshift(post)
-            data.feed.count++
-            return data
+            data.feed.links.unshift(post);
+            data.feed.count++;
+            return data;
           } else {
-            return null
+            return null;
           }
-        })
+        });
+      }
+    },
+    Subscription: {
+      newLink: ({ newLink }, _args, cache) => {
+        const variables = { first: 10, skip: 0, orderBy: "createdAt_DESC" };
+        cache.updateQuery({ query: FEED_QUERY, variables }, data => {
+          if (data !== null) {
+            data.feed.links.unshift(newLink);
+            data.feed.count++;
+            return data;
+          } else {
+            return null;
+          }
+        });
       }
     }
   }
-})
+});
 
-const subscriptionClient = new Subscription(
+const subscriptionClient = new SubscriptionClient(
   'ws://localhost:4000',
   {
     reconnect: true,
@@ -60,14 +72,14 @@ const client = createClient({
     }
   },
   exchanges: [
-    dedupExchange, 
-    cache, 
+    dedupExchange,
+    cache,
     fetchExchange,
     subscriptionExchange({
       forwardSubscription: operation => subscriptionClient.request(operation)
     })
   ]
-})
+});
 
 ReactDOM.render(
   <BrowserRouter>
@@ -75,5 +87,5 @@ ReactDOM.render(
       <App />
     </Provider>
   </BrowserRouter>,
-  document.getElementById('root')
-)
+  document.getElementById('root'),
+);
